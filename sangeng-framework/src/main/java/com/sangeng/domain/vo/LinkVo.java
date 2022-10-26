@@ -1,6 +1,5 @@
 package com.sangeng.domain.vo;
 
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -8,11 +7,16 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class HotArticleVo {
+public class LinkVo {
     private Long id;
-    //标题
-    private String title;
 
-    //访问量
-    private Long viewCount;
+
+    private String name;
+
+    private String logo;
+
+    private String description;
+    //网站地址
+    private String address;
+
 }
