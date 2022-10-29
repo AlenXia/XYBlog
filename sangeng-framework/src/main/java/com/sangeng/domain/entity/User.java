@@ -1,16 +1,14 @@
 package com.sangeng.domain.entity;
 
-import java.util.Date;
-
-import java.io.Serializable;
+import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+
+import java.util.Date;
+
 /**
  * 用户表(User)表实体类
- *
  * @author makejava
  * @since 2022-10-29 16:53:22
  */
@@ -19,8 +17,8 @@ import com.baomidou.mybatisplus.annotation.TableName;
 @AllArgsConstructor
 @NoArgsConstructor
 @TableName("sys_user")
-public class User  {
-    //主键@TableId
+public class User {
+    // 主键@TableId
     private Long id;
 
     //用户名
