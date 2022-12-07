@@ -35,3 +35,4 @@ public class AuthenticationEntryPointImpl implements AuthenticationEntryPoint {
         WebUtils.renderString(response, JSON.toJSONString(result));
     }
 }
+
