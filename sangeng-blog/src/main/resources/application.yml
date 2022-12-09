@@ -24,5 +24,4 @@ mybatis-plus:
 
 oss:
   accessKeyId: LTAI5tPW568haZNR5AzAPYNp
-  accessKeySecret: 8bwnLLJbXCTTCorjdDpCU6IhIp6PK6
   bucketName: xzy-blog
