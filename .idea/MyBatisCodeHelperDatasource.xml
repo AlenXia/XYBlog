@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="MyBatisCodeHelperDatasource">
+    <option name="projectProfile">
+      <ProjectProfile>
+        <option name="mapperFilesFolder" value="E:\JAVA\SGBlog\sangeng-framework\src\main\resources" />
+        <option name="mapperFilesFolderList">
+          <list>
+            <option value="E:\JAVA\SGBlog\sangeng-framework\src\main\resources" />
+          </list>
+        </option>
+      </ProjectProfile>
+    </option>
+  </component>
+</project>
