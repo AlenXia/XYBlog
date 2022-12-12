@@ -15,7 +15,7 @@ public class ExcelCategoryVo {
     @ExcelProperty("描述")
     private String description;
 
-    //状态0:正常,1禁用
+    // 状态0:正常,1禁用
     @ExcelProperty("状态0:正常,1禁用")
     private String status;
 }
