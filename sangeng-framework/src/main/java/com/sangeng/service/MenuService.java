@@ -12,8 +12,11 @@ import java.util.List;
  * @author makejava
  * @since 2022-12-10 11:18:50
  */
+
 public interface MenuService extends IService<Menu> {
 
     List<String> selectPermsByUserId(Long id);
+
+    List<Menu> selectRouterMenuTreeByUserId(Long userId);
 }
 

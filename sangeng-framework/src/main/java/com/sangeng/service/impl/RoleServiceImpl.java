@@ -11,7 +11,6 @@ import java.util.List;
 
 /**
  * 角色信息表(Role)表服务实现类
- *
  * @author makejava
  * @since 2022-12-10 11:25:16
  */
@@ -20,14 +19,14 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
     @Override
     public List<String> selectRoleKeyByUserId(Long id) {
         // 判断是否为管理员 如果是返回集合中只需要有admin
-        if (id==1L){
+        if (id == 1L) {
             List<String> roleKeys = new ArrayList<>();
             roleKeys.add("admin");
         }
         // 否则查询用户所具有的角色信息
 
 
-return getBaseMapper().selectRoleKeyByUserId(id);
+        return getBaseMapper().selectRoleKeyByUserId(id);
     }
 }
 
