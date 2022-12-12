@@ -2,12 +2,10 @@ package com.sangeng.controller;
 
 import com.sangeng.domain.ResponseResult;
 import com.sangeng.domain.dto.AddArticleDto;
+import com.sangeng.domain.vo.PageVo;
 import com.sangeng.service.ArticleService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/content/article")
@@ -17,9 +15,28 @@ public class ArticleController {
     private ArticleService articleService;
 
     @PostMapping
-    public ResponseResult add(@RequestBody AddArticleDto article){
+    public ResponseResult add(@RequestBody AddArticleDto article) {
         return articleService.add(article);
     }
 
+    @GetMapping("/list")
+    public ResponseResult<PageVo> listAllArticle(Integer pageNum, Integer pageSize, String title, String summary){
+        return articleService.listAllArticle(pageNum,pageSize,title,summary);
+    }
 
+    @GetMapping("/{id}")
+    public ResponseResult<AddArticleDto> selectArticleById(@PathVariable("id")Integer id) {
+        return articleService.selectArticleById(id);
+    }
+
+    @PutMapping
+    public ResponseResult updateArticle(@RequestBody AddArticleDto articleDto) {
+        return articleService.updateArticle(articleDto);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseResult deleteById(@PathVariable("id") Integer id) {
+
+        return articleService.deleteById(id);
+    }
 }

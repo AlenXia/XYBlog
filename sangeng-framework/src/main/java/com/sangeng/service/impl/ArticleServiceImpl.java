@@ -23,6 +23,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -129,7 +130,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     @Override
     public ResponseResult updateViewCount(Long id) {
         //更新redis中对应 id的浏览量
-        redisCache.incrementCacheMapValue("article:viewCount",id.toString(),1);
+        redisCache.incrementCacheMapValue("article:viewCount", id.toString(), 1);
         return ResponseResult.okResult();
     }
 
@@ -140,6 +141,50 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         Article article = BeanCopyUtils.copyBean(articleDto, Article.class);
         save(article);
 
+        List<ArticleTag> articleTags = articleDto.getTags().stream()
+                .map(tagId -> new ArticleTag(article.getId(), tagId))
+                .collect(Collectors.toList());
+
+        //添加 博客和标签的关联
+        articleTagService.saveBatch(articleTags);
+        return ResponseResult.okResult();
+    }
+
+    @Override
+    public ResponseResult<PageVo> listAllArticle(Integer pageNum, Integer pageSize, String title, String summary) {
+        //分页查询
+        LambdaQueryWrapper<Article> queryWrapper = new LambdaQueryWrapper<>();
+        if (StringUtils.hasText(title)) {
+            queryWrapper.like(Article::getTitle, title);
+        }
+        if (StringUtils.hasText(summary)) {
+            queryWrapper.like(Article::getSummary, summary);
+        }
+        Page<Article> page = new Page<>();
+        page.setCurrent(pageNum);
+        page.setSize(pageSize);
+        page(page, queryWrapper);
+        // 封装数据返回
+        PageVo pageVo = new PageVo(page.getRecords(), page.getTotal());
+
+        return ResponseResult.okResult(pageVo);
+    }
+
+    @Override
+    public ResponseResult<AddArticleDto> selectArticleById(Integer id) {
+        Article article = getBaseMapper().selectById(id);
+        AddArticleDto addArticleDto = BeanCopyUtils.copyBean(article, AddArticleDto.class);
+        // 根据文章id查询所有个tags
+        List<Long> tags=articleTagService.getAllTags(article.getId().intValue());
+        addArticleDto.setTags(tags);
+        return ResponseResult.okResult(addArticleDto);
+    }
+
+    @Override
+    public ResponseResult updateArticle(AddArticleDto articleDto) {
+        Article article = BeanCopyUtils.copyBean(articleDto, Article.class);
+        // 先根据文章id把关联表中的关系删除
+        articleTagService.deleteByArticleId(article.getId().intValue());
 
         List<ArticleTag> articleTags = articleDto.getTags().stream()
                 .map(tagId -> new ArticleTag(article.getId(), tagId))
@@ -147,6 +192,22 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
 
         //添加 博客和标签的关联
         articleTagService.saveBatch(articleTags);
+
+        updateById(article);
+        return ResponseResult.okResult();
+    }
+
+    @Override
+    public ResponseResult deleteById(Integer id) {
+        // 判断文章是否存在或是否已被删除
+        Article article = getBaseMapper().selectById(id);
+        if (article==null||(article.getStatus().equals(1))||(article.getDelFlag().equals(1))){
+            throw new RuntimeException("文章不存在或已被删除或是草稿");
+        }
+        // 删除文章
+        getBaseMapper().deleteById(article.getId().intValue());
+        // 删除关联
+        articleTagService.deleteByArticleId(article.getId().intValue());
         return ResponseResult.okResult();
     }
 }

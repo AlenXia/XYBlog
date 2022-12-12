@@ -3,6 +3,8 @@ package com.sangeng.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.sangeng.domain.entity.ArticleTag;
 
+import java.util.List;
+
 
 /**
  * 文章标签关联表(ArticleTag)表服务接口
@@ -12,5 +14,8 @@ import com.sangeng.domain.entity.ArticleTag;
  */
 public interface ArticleTagService extends IService<ArticleTag> {
 
+    void deleteByArticleId(Integer id);
+
+    List<Long> getAllTags(Integer id);
 }
 

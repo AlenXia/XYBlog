@@ -9,4 +9,6 @@ import com.sangeng.domain.entity.Article;
  * @Description
  */
 public interface ArticleMapper extends BaseMapper<Article> {
+
+
 }
