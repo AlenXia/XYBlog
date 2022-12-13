@@ -1,7 +1,9 @@
 package com.sangeng.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.sangeng.domain.ResponseResult;
 import com.sangeng.domain.entity.Menu;
+import com.sangeng.domain.vo.MenuVo;
 
 import java.util.List;
 
@@ -18,5 +20,41 @@ public interface MenuService extends IService<Menu> {
     List<String> selectPermsByUserId(Long id);
 
     List<Menu> selectRouterMenuTreeByUserId(Long userId);
+
+    /**
+     * 菜单管理：展示所有菜单 可以查询
+     * @param status
+     * @param menuName
+     * @return
+     */
+    ResponseResult<MenuVo> listAllMenu(String status, String menuName);
+
+    /**
+     * 新增菜单
+     * @param menuVo
+     * @return
+     */
+    ResponseResult addMenu(MenuVo menuVo);
+
+    /**
+     * 删除菜单
+     * @param id
+     * @return
+     */
+    ResponseResult deleteByMenuId(Integer id);
+
+    /**
+     * 根据id查询菜单数据
+     * @param id
+     * @return
+     */
+    ResponseResult<MenuVo> selectMenuById(Integer id);
+
+    /**
+     * 更新菜单
+     * @param menuVo
+     * @return
+     */
+    ResponseResult updateMenu(MenuVo menuVo);
 }
 

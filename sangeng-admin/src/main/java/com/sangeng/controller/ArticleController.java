@@ -24,6 +24,11 @@ public class ArticleController {
         return articleService.listAllArticle(pageNum,pageSize,title,summary);
     }
 
+    /**
+     * 根据id查询文章数据
+     * @param id
+     * @return
+     */
     @GetMapping("/{id}")
     public ResponseResult<AddArticleDto> selectArticleById(@PathVariable("id")Integer id) {
         return articleService.selectArticleById(id);

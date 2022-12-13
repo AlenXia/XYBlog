@@ -3,11 +3,15 @@ package com.sangeng.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.sangeng.constants.SystemConstants;
+import com.sangeng.domain.ResponseResult;
 import com.sangeng.domain.entity.Menu;
+import com.sangeng.domain.vo.MenuVo;
 import com.sangeng.mapper.MenuMapper;
 import com.sangeng.service.MenuService;
+import com.sangeng.utils.BeanCopyUtils;
 import com.sangeng.utils.SecurityUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -74,6 +78,66 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
                 .map(m -> m.setChildren(getChildren(m, menus)))
                 .collect(Collectors.toList());
         return childrenList;
+    }
+
+    @Override
+    public ResponseResult<MenuVo> listAllMenu(String status, String menuName) {
+        // 判断查询条件时都存在
+        LambdaQueryWrapper<Menu> queryWrapper = new LambdaQueryWrapper<>();
+        if (StringUtils.hasText(status)) {
+            queryWrapper.like(Menu::getStatus, status);
+        }
+        if (StringUtils.hasText(menuName)) {
+            queryWrapper.like(Menu::getMenuName, menuName);
+        }
+        // 进行排序
+        queryWrapper.orderByAsc(Menu::getParentId, Menu::getOrderNum);
+
+        List<Menu> menuList = list(queryWrapper);
+
+        List<MenuVo> menuVoList = BeanCopyUtils.copyBeanList(menuList, MenuVo.class);
+
+        return ResponseResult.okResult(menuVoList);
+    }
+
+
+    @Override
+    public ResponseResult addMenu(MenuVo menuVo) {
+        // 判断传入值是否为空
+        if (menuVo == null) {
+            throw new RuntimeException("保存文章为空");
+        }
+        Menu menu = BeanCopyUtils.copyBean(menuVo, Menu.class);
+        save(menu);
+        return ResponseResult.okResult();
+    }
+
+    @Override
+    public ResponseResult deleteByMenuId(Integer id) {
+        // 判断是否存在这个MenuId
+        if (id == null) {
+            throw new RuntimeException("传入id为空");
+        }
+        // 根据MenuId逻辑删除
+        getBaseMapper().deleteById(id);
+        return ResponseResult.okResult();
+    }
+
+    @Override
+    public ResponseResult<MenuVo> selectMenuById(Integer id) {
+        Menu menu = getBaseMapper().selectById(id);
+        if (menu == null||menu.getDelFlag().equals(1)) {
+            throw new RuntimeException("菜单不存在或已被删除");
+        }
+        MenuVo menuVo = BeanCopyUtils.copyBean(menu, MenuVo.class);
+        return ResponseResult.okResult(menuVo);
+    }
+
+    @Override
+    public ResponseResult updateMenu(MenuVo menuVo) {
+        Menu menu = BeanCopyUtils.copyBean(menuVo, Menu.class);
+        updateById(menu);
+        return ResponseResult.okResult();
     }
 }
 

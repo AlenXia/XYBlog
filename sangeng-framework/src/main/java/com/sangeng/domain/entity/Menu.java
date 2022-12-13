@@ -25,7 +25,6 @@ import java.util.List;
 public class Menu  {
     //菜单ID@TableId
     private Long id;
-
     //菜单名称
     private String menuName;
     //父菜单ID
