@@ -123,7 +123,6 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
             articleDetailVo.setCategoryName(category.getName());
         }
         // 封装响应返回
-
         return ResponseResult.okResult(articleDetailVo);
     }
 
@@ -152,7 +151,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
 
     @Override
     public ResponseResult<PageVo> listAllArticle(Integer pageNum, Integer pageSize, String title, String summary) {
-        //分页查询
+        // 添加模糊查询条件
         LambdaQueryWrapper<Article> queryWrapper = new LambdaQueryWrapper<>();
         if (StringUtils.hasText(title)) {
             queryWrapper.like(Article::getTitle, title);
@@ -160,6 +159,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         if (StringUtils.hasText(summary)) {
             queryWrapper.like(Article::getSummary, summary);
         }
+        //分页查询
         Page<Article> page = new Page<>();
         page.setCurrent(pageNum);
         page.setSize(pageSize);
@@ -172,7 +172,9 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
 
     @Override
     public ResponseResult<AddArticleDto> selectArticleById(Integer id) {
+        // 根据id查询
         Article article = getBaseMapper().selectById(id);
+        // 拷贝
         AddArticleDto addArticleDto = BeanCopyUtils.copyBean(article, AddArticleDto.class);
         // 根据文章id查询所有个tags
         List<Long> tags=articleTagService.getAllTags(article.getId().intValue());
@@ -193,6 +195,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         //添加 博客和标签的关联
         articleTagService.saveBatch(articleTags);
 
+        // 更新
         updateById(article);
         return ResponseResult.okResult();
     }

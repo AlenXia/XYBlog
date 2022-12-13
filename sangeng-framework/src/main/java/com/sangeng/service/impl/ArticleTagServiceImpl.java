@@ -19,11 +19,20 @@ public class ArticleTagServiceImpl extends ServiceImpl<ArticleTagMapper, Article
     @Autowired
     private ArticleTagMapper articleTagMapper;
 
+    /**
+     * 根据文章Id删除所有Id
+     * @param id
+     */
     @Override
     public void deleteByArticleId(Integer id) {
         articleTagMapper.deleteByArticleId(id);
     }
 
+    /**
+     * 根据文章id查询所有tagId
+     * @param id
+     * @return
+     */
     @Override
     public List<Long> getAllTags(Integer id) {
         return articleTagMapper.getAllTags(id);
