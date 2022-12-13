@@ -20,6 +20,11 @@ public interface ArticleService extends IService<Article> {
 
     ResponseResult updateViewCount(Long id);
 
+    /**
+     * 新增文章
+     * @param article
+     * @return
+     */
     ResponseResult add(AddArticleDto article);
 
     /**

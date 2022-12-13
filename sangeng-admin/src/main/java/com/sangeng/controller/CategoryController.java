@@ -25,6 +25,10 @@ public class CategoryController {
     @Autowired
     private CategoryService categoryService;
 
+    /**
+     * 查询所有分类
+     * @return
+     */
     @GetMapping("/listAllCategory")
     public ResponseResult listAllCategory() {
         List<CategoryVo> list = categoryService.listAllCategory();

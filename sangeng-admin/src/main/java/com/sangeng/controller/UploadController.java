@@ -14,6 +14,11 @@ public class UploadController {
     @Autowired
     private UploadService uploadService;
 
+    /**
+     * 上传文件
+     * @param multipartFile
+     * @return
+     */
     @PostMapping("/upload")
     public ResponseResult uploadImg(@RequestParam("img") MultipartFile multipartFile) {
         return uploadService.uploadImg(multipartFile);

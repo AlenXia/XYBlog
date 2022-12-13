@@ -35,6 +35,11 @@ public class LoginController {
     @Autowired
     private RoleService roleService;
 
+    /**
+     * 登陆
+     * @param user
+     * @return
+     */
     @PostMapping("/user/login")
     public ResponseResult login(@RequestBody User user) {
         if (!StringUtils.hasText(user.getUserName())) {
@@ -44,6 +49,10 @@ public class LoginController {
         return loginService.login(user);
     }
 
+    /**
+     * 获取登陆信息
+     * @return
+     */
     @GetMapping("getInfo")
     public ResponseResult<AdminUserInfoVo> getInfo() {
         // 获取当前登陆的用户
@@ -71,6 +80,10 @@ public class LoginController {
         return ResponseResult.okResult(new RoutersVo(menus));
     }
 
+    /**
+     * 后台退出登陆
+     * @return
+     */
     @PostMapping("/user/logout")
     public ResponseResult logout(){
         return loginService.logout();

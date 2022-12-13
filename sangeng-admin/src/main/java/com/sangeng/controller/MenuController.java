@@ -48,11 +48,21 @@ public class MenuController {
         return menuService.selectMenuById(id);
     }
 
+    /**
+     * 更新菜单
+     * @param menuVo
+     * @return
+     */
     @PutMapping
     public ResponseResult updateMenu(@RequestBody MenuVo menuVo) {
         return menuService.updateMenu(menuVo);
     }
 
+    /**
+     * 删除菜单
+     * @param id
+     * @return
+     */
     @DeleteMapping("/{id}")
     public ResponseResult deleteByMenuId(@PathVariable("id") Integer id) {
 
