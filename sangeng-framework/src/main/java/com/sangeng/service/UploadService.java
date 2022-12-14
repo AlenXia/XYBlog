@@ -9,5 +9,10 @@ import org.springframework.web.multipart.MultipartFile;
  * @Description
  */
 public interface UploadService {
+    /**
+     * 上传图片文件
+     * @param file
+     * @return
+     */
     ResponseResult uploadImg(MultipartFile file);
 }
