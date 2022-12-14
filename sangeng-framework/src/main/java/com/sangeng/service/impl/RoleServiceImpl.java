@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.sangeng.domain.ResponseResult;
 import com.sangeng.domain.entity.Role;
 import com.sangeng.domain.vo.PageVo;
+import com.sangeng.domain.vo.RoleVo;
 import com.sangeng.mapper.RoleMapper;
 import com.sangeng.service.RoleService;
 import org.springframework.stereotype.Service;
@@ -51,6 +52,21 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
         PageVo pageVo = new PageVo(page.getRecords(), page.getTotal());
 
         return ResponseResult.okResult(pageVo);
+    }
+
+    @Override
+    public ResponseResult changeStatus(RoleVo roleVo) {
+        // 根据id查询出角色
+        Role role = getBaseMapper().selectById(roleVo.getRoleId());
+        // 修改角色状态信息
+        if (role.getStatus().equals("1")) {
+            role.setStatus("0");
+        }else {
+            role.setStatus("1");
+        }
+        // 更新角色信息
+        updateById(role);
+        return ResponseResult.okResult();
     }
 }
 

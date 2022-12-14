@@ -19,6 +19,7 @@ import com.sangeng.service.ArticleTagService;
 import com.sangeng.service.CategoryService;
 import com.sangeng.utils.BeanCopyUtils;
 import com.sangeng.utils.RedisCache;
+import com.sangeng.utils.SecurityUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -138,6 +140,10 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     public ResponseResult add(AddArticleDto articleDto) {
         //添加 博客
         Article article = BeanCopyUtils.copyBean(articleDto, Article.class);
+        article.setCreateBy(SecurityUtils.getUserId());
+        article.setCreateTime(new Date());
+        article.setUpdateBy(SecurityUtils.getUserId());
+        article.setUpdateTime(new Date());
         save(article);
 
         List<ArticleTag> articleTags = articleDto.getTags().stream()
@@ -196,6 +202,8 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         articleTagService.saveBatch(articleTags);
 
         // 更新
+        article.setUpdateBy(SecurityUtils.getUserId());
+        article.setUpdateTime(new Date());
         updateById(article);
         return ResponseResult.okResult();
     }
@@ -208,6 +216,8 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
             throw new RuntimeException("文章不存在或已被删除或是草稿");
         }
         // 删除文章
+        article.setUpdateBy(SecurityUtils.getUserId());
+        article.setUpdateTime(new Date());
         getBaseMapper().deleteById(article.getId().intValue());
         // 删除关联
         articleTagService.deleteByArticleId(article.getId().intValue());
