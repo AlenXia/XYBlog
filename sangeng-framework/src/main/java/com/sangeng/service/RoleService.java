@@ -1,7 +1,9 @@
 package com.sangeng.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.sangeng.domain.ResponseResult;
 import com.sangeng.domain.entity.Role;
+import com.sangeng.domain.vo.PageVo;
 
 import java.util.List;
 
@@ -15,5 +17,15 @@ import java.util.List;
 public interface RoleService extends IService<Role> {
 
     List<String> selectRoleKeyByUserId(Long id);
+
+    /**
+     * 展示角色列表
+     * @param pageNum
+     * @param pageSize
+     * @param roleName
+     * @param status
+     * @return
+     */
+    ResponseResult<PageVo> listAllArticle(Integer pageNum, Integer pageSize, String roleName, String status);
 }
 

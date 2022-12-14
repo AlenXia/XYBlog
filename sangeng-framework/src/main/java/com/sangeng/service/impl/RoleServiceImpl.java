@@ -1,10 +1,15 @@
 package com.sangeng.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.sangeng.domain.ResponseResult;
 import com.sangeng.domain.entity.Role;
+import com.sangeng.domain.vo.PageVo;
 import com.sangeng.mapper.RoleMapper;
 import com.sangeng.service.RoleService;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,9 +29,28 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
             roleKeys.add("admin");
         }
         // 否则查询用户所具有的角色信息
-
-
         return getBaseMapper().selectRoleKeyByUserId(id);
+    }
+
+    @Override
+    public ResponseResult<PageVo> listAllArticle(Integer pageNum, Integer pageSize, String roleName, String status) {
+        // 添加模糊查询条件
+        LambdaQueryWrapper<Role> queryWrapper = new LambdaQueryWrapper<>();
+        if (StringUtils.hasText(roleName)) {
+            queryWrapper.like(Role::getRoleName, roleName);
+        }
+        if (StringUtils.hasText(status)) {
+            queryWrapper.like(Role::getStatus, status);
+        }
+        //分页查询
+        Page<Role> page = new Page<>();
+        page.setCurrent(pageNum);
+        page.setSize(pageSize);
+        page(page, queryWrapper);
+        // 封装数据返回
+        PageVo pageVo = new PageVo(page.getRecords(), page.getTotal());
+
+        return ResponseResult.okResult(pageVo);
     }
 }
 
