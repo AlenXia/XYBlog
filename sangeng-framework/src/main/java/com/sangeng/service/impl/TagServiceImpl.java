@@ -55,6 +55,7 @@ public class TagServiceImpl extends ServiceImpl<TagMapper, Tag> implements TagSe
         Tag tag = new Tag();
         tag.setName(tagListDto.getName());
         tag.setRemark(tagListDto.getRemark());
+        tag.setDelFlag(0);
         save(tag);
         return ResponseResult.okResult();
     }
