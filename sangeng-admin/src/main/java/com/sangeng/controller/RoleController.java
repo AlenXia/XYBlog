@@ -1,6 +1,7 @@
 package com.sangeng.controller;
 
 import com.sangeng.domain.ResponseResult;
+import com.sangeng.domain.dto.AddRoleDto;
 import com.sangeng.domain.vo.PageVo;
 import com.sangeng.domain.vo.RoleVo;
 import com.sangeng.service.RoleService;
@@ -31,9 +32,23 @@ public class RoleController {
         return roleService.listAllArticle(pageNum, pageSize, roleName, status);
     }
 
-
+    /**
+     * 改变角色状态
+     * @param roleVo
+     * @return
+     */
     @PutMapping("/changeStatus")
     public ResponseResult changeStatus(@RequestBody RoleVo roleVo) {
         return roleService.changeStatus(roleVo);
+    }
+
+    /**
+     * 添加角色
+     * @param addRoleDto
+     * @return
+     */
+    @PostMapping
+    public ResponseResult addRole(@RequestBody AddRoleDto addRoleDto) {
+        return roleService.addRole(addRoleDto);
     }
 }

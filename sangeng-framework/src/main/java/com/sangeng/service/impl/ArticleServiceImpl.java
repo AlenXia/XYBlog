@@ -146,8 +146,11 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         article.setUpdateTime(new Date());
         save(article);
 
-        List<ArticleTag> articleTags = articleDto.getTags().stream()
-                .map(tagId -> new ArticleTag(article.getId(), tagId))
+        List<ArticleTag> articleTags;
+        articleTags = articleDto.getTags().stream()
+                .map((Long tagId) -> {
+                    return new ArticleTag(article.getId(), tagId);
+                })
                 .collect(Collectors.toList());
 
         //添加 博客和标签的关联
@@ -195,7 +198,9 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         articleTagService.deleteByArticleId(article.getId().intValue());
 
         List<ArticleTag> articleTags = articleDto.getTags().stream()
-                .map(tagId -> new ArticleTag(article.getId(), tagId))
+                .map(tagId -> {
+                    return new ArticleTag(article.getId(), tagId);
+                })
                 .collect(Collectors.toList());
 
         //添加 博客和标签的关联

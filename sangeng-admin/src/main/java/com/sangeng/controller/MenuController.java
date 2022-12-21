@@ -1,6 +1,7 @@
 package com.sangeng.controller;
 
 import com.sangeng.domain.ResponseResult;
+import com.sangeng.domain.vo.MenuTreeVo;
 import com.sangeng.domain.vo.MenuVo;
 import com.sangeng.service.MenuService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +35,7 @@ public class MenuController {
      * @return
      */
     @PostMapping
-    public ResponseResult addMenu(@RequestBody MenuVo menuVo){
+    public ResponseResult addMenu(@RequestBody MenuVo menuVo) {
         return menuService.addMenu(menuVo);
     }
 
@@ -44,7 +45,7 @@ public class MenuController {
      * @return
      */
     @GetMapping("/{id}")
-    public ResponseResult<MenuVo> selectMenuById(@PathVariable("id")Integer id) {
+    public ResponseResult<MenuVo> selectMenuById(@PathVariable("id") Integer id) {
         return menuService.selectMenuById(id);
     }
 
@@ -69,5 +70,8 @@ public class MenuController {
         return menuService.deleteByMenuId(id);
     }
 
-
+    @GetMapping("/treeselect")
+    public ResponseResult<MenuTreeVo> selectMenuTree() {
+        return menuService.selectMenuTree();
+    }
 }

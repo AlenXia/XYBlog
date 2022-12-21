@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.sangeng.constants.SystemConstants;
 import com.sangeng.domain.ResponseResult;
 import com.sangeng.domain.entity.Menu;
+import com.sangeng.domain.vo.MenuTreeVo;
 import com.sangeng.domain.vo.MenuVo;
 import com.sangeng.mapper.MenuMapper;
 import com.sangeng.service.MenuService;
@@ -13,6 +14,7 @@ import com.sangeng.utils.SecurityUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -126,7 +128,7 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
     @Override
     public ResponseResult<MenuVo> selectMenuById(Integer id) {
         Menu menu = getBaseMapper().selectById(id);
-        if (menu == null||menu.getDelFlag().equals(1)) {
+        if (menu == null || menu.getDelFlag().equals(1)) {
             throw new RuntimeException("菜单不存在或已被删除");
         }
         MenuVo menuVo = BeanCopyUtils.copyBean(menu, MenuVo.class);
@@ -138,6 +140,36 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
         Menu menu = BeanCopyUtils.copyBean(menuVo, Menu.class);
         updateById(menu);
         return ResponseResult.okResult();
+    }
+
+    @Override
+    public ResponseResult<MenuTreeVo> selectMenuTree() {
+        // 查询所有Menu
+        List<Menu> menus = getBaseMapper().selectList(null);
+        List<MenuTreeVo> menuTreeVos=new ArrayList<>();
+        for (int i = 0; i < menus.size(); ++i) {
+            MenuTreeVo menuTree = new MenuTreeVo();
+            menuTree.setId(menus.get(i).getId());
+            menuTree.setLabel(menus.get(i).getMenuName());
+            menuTree.setParentId(menus.get(i).getParentId());
+            menuTreeVos.add(menuTree);
+        }
+        // 构建tree
+        // 先找出第一层的菜单  然后去找他们的子菜单设置到children属性中
+        List<MenuTreeVo> menuTreeVO = menuTreeVos.stream()
+                .filter(menu -> menu.getParentId().equals(0L))
+                .map(menu -> menu.setChildren(getMenuVoChildren(menu, menuTreeVos)))
+                .collect(Collectors.toList());
+        System.err.println(menuTreeVO);
+        return ResponseResult.okResult(menuTreeVO);
+    }
+
+    private List<MenuTreeVo> getMenuVoChildren(MenuTreeVo menuTreeVo, List<MenuTreeVo> menuTreeVos) {
+        List<MenuTreeVo> childrenList = menuTreeVos.stream()
+                .filter(m -> m.getParentId().equals(menuTreeVo.getId()))
+                .map(m -> m.setChildren(getMenuVoChildren(m, menuTreeVos)))
+                .collect(Collectors.toList());
+        return childrenList;
     }
 }
 

@@ -1,5 +1,7 @@
 package com.sangeng.domain.entity;
 
+import com.baomidou.mybatisplus.annotation.FieldFill;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.AllArgsConstructor;
@@ -32,16 +34,17 @@ public class Role  {
     private String status;
     //删除标志（0代表存在 1代表删除）
     private String delFlag;
-    //创建者
-    private Long createBy;
-    //创建时间
-    private Date createTime;
-    //更新者
-    private Long updateBy;
-    //更新时间
-    private Date updateTime;
     //备注
     private String remark;
+
+    @TableField(fill = FieldFill.INSERT)
+    private Long createBy;
+    @TableField(fill = FieldFill.INSERT)
+    private Date createTime;
+    @TableField(fill = FieldFill.INSERT_UPDATE)
+    private Long updateBy;
+    @TableField(fill = FieldFill.INSERT_UPDATE)
+    private Date updateTime;
 }
 
 
