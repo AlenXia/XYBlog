@@ -5,9 +5,13 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.sangeng.domain.ResponseResult;
 import com.sangeng.domain.dto.AddRoleDto;
+import com.sangeng.domain.dto.SelectRoleDto;
+import com.sangeng.domain.dto.UpdateRoleDto;
 import com.sangeng.domain.entity.Role;
 import com.sangeng.domain.entity.RoleMenu;
+import com.sangeng.domain.vo.MenuTreeVo;
 import com.sangeng.domain.vo.PageVo;
+import com.sangeng.domain.vo.RoleMenuTreeSelectVo;
 import com.sangeng.domain.vo.RoleVo;
 import com.sangeng.mapper.RoleMapper;
 import com.sangeng.service.RoleMenuService;
@@ -43,7 +47,7 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
     }
 
     @Override
-    public ResponseResult<PageVo> listAllArticle(Integer pageNum, Integer pageSize, String roleName, String status) {
+    public ResponseResult<PageVo> listAllRole(Integer pageNum, Integer pageSize, String roleName, String status) {
         // 添加模糊查询条件
         LambdaQueryWrapper<Role> queryWrapper = new LambdaQueryWrapper<>();
         if (StringUtils.hasText(roleName)) {
@@ -83,12 +87,61 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
         Role role = BeanCopyUtils.copyBean(addRoleDto, Role.class);
         save(role);
         // 保存角色和权限的关系
-        List<RoleMenu> roleMenus =addRoleDto.getMenuIds().stream()
-                .map(menuId->{
+        List<RoleMenu> roleMenus = addRoleDto.getMenuIds().stream()
+                .map(menuId -> {
                     return new RoleMenu(role.getId(), menuId.longValue());
                 })
-                        .collect(Collectors.toList());
-                roleMenuService.saveBatch(roleMenus);
+                .collect(Collectors.toList());
+        roleMenuService.saveBatch(roleMenus);
+        return ResponseResult.okResult();
+    }
+
+    @Override
+    public ResponseResult<SelectRoleDto> selectById(Integer id) {
+        Role role = getBaseMapper().selectById(id);
+        SelectRoleDto selectRoleDto = BeanCopyUtils.copyBean(role, SelectRoleDto.class);
+        return ResponseResult.okResult(selectRoleDto);
+    }
+
+    @Override
+    public ResponseResult<RoleMenuTreeSelectVo> roleMenuTreeSelect(Long id) {
+        //
+        List<MenuTreeVo> menuTreeVos = new ArrayList<>();
+
+        // 使用表达式查找出所有的checkedKeys
+        LambdaQueryWrapper<RoleMenu> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(RoleMenu::getRoleId, id);
+        List<RoleMenu> roleMenuList = roleMenuService.getBaseMapper().selectList(queryWrapper);
+        List<Long> checkedKeys = new ArrayList<>();
+        for (int i = 0; i < roleMenuList.size(); i++) {
+            checkedKeys.add(roleMenuList.get(i).getRoleId());
+        }
+
+        // 有参构造
+        RoleMenuTreeSelectVo roleMenuTreeSelectVo = new RoleMenuTreeSelectVo(checkedKeys, menuTreeVos);
+        return ResponseResult.okResult(roleMenuTreeSelectVo);
+    }
+
+    @Override
+    public ResponseResult updateRole(UpdateRoleDto updateRoleDto) {
+
+        // 判断角色是否存在
+        Role select = getBaseMapper().selectById(updateRoleDto.getId());
+        if (select == null) {
+            throw new RuntimeException("被修改的角色不存在");
+        }
+
+        // 删除role_menu表中的关系
+        LambdaQueryWrapper<RoleMenu> queryWrapper=new LambdaQueryWrapper<>();
+        queryWrapper.eq(RoleMenu::getRoleId, updateRoleDto.getId());
+        roleMenuService.getBaseMapper().delete(queryWrapper);
+
+        // 添加role_menu表中的关系
+
+
+        // 更新角色信息
+        Role role = BeanCopyUtils.copyBean(updateRoleDto, Role.class);
+        getBaseMapper().updateById(role);
         return ResponseResult.okResult();
     }
 }

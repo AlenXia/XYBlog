@@ -155,12 +155,11 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
             menuTreeVos.add(menuTree);
         }
         // 构建tree
-        // 先找出第一层的菜单  然后去找他们的子菜单设置到children属性中
+        // 先找出第一层的菜单,然后去找他们的子菜单设置到children属性中
         List<MenuTreeVo> menuTreeVO = menuTreeVos.stream()
                 .filter(menu -> menu.getParentId().equals(0L))
                 .map(menu -> menu.setChildren(getMenuVoChildren(menu, menuTreeVos)))
                 .collect(Collectors.toList());
-        System.err.println(menuTreeVO);
         return ResponseResult.okResult(menuTreeVO);
     }
 
