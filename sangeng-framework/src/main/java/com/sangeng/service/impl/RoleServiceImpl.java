@@ -137,7 +137,12 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
         roleMenuService.getBaseMapper().delete(queryWrapper);
 
         // 添加role_menu表中的关系
-
+        RoleMenu roleMenu = new RoleMenu();
+        roleMenu.setRoleId(updateRoleDto.getId());
+        for (int i = 0; i < updateRoleDto.getMenuIds().toArray().length; i++) {
+            roleMenu.setMenuId(updateRoleDto.getMenuIds().get(i));
+            roleMenuService.getBaseMapper().insert(roleMenu);
+        }
 
         // 更新角色信息
         Role role = BeanCopyUtils.copyBean(updateRoleDto, Role.class);

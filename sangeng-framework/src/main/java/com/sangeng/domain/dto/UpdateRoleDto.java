@@ -22,7 +22,7 @@ public class UpdateRoleDto {
     private String roleKey;
     private Integer roleSort;
     private String status;
-    private List<Integer> menuIds;
+    private List<Long> menuIds;
     String remark;
 }
 
