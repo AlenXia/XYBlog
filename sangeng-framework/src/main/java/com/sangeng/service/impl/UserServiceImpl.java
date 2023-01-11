@@ -1,13 +1,18 @@
 package com.sangeng.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.sangeng.domain.ResponseResult;
+import com.sangeng.domain.dto.AddUserDto;
 import com.sangeng.domain.entity.User;
+import com.sangeng.domain.entity.UserRole;
+import com.sangeng.domain.vo.PageVo;
 import com.sangeng.domain.vo.UserInfoVo;
 import com.sangeng.enums.AppHttpCodeEnum;
 import com.sangeng.exception.SystemException;
 import com.sangeng.mapper.UserMapper;
+import com.sangeng.service.UserRoleService;
 import com.sangeng.service.UserService;
 import com.sangeng.utils.BeanCopyUtils;
 import com.sangeng.utils.SecurityUtils;
@@ -23,6 +28,8 @@ import org.springframework.util.StringUtils;
  */
 @Service("userService")
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
+    @Autowired
+    private UserRoleService userRoleService;
 
     @Override
     public ResponseResult userInfo() {
@@ -84,6 +91,83 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     private boolean userNameExist(String userName) {
         LambdaQueryWrapper<User> lambdaQueryWrapper = new LambdaQueryWrapper<>();
         lambdaQueryWrapper.eq(User::getUserName, userName);
+        return count(lambdaQueryWrapper) > 0;
+    }
+
+    @Override
+    public ResponseResult<PageVo> listAllUser(Integer pageNum, Integer pageSize, String userName, String phonenumber, String status) {
+        // 添加模糊查询条件
+        LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
+        if (StringUtils.hasText(userName)) {
+            queryWrapper.like(User::getUserName, userName);
+        }
+        if (StringUtils.hasText(phonenumber)) {
+            queryWrapper.like(User::getPhonenumber, phonenumber);
+        }
+        if (StringUtils.hasText(status)) {
+            queryWrapper.like(User::getStatus, status);
+        }
+
+        // 分页查询
+        Page<User> page=new Page<>();
+        page.setCurrent(pageNum);
+        page.setSize(pageSize);
+        page(page, queryWrapper);
+        // 封装数据返回
+        PageVo pageVo = new PageVo(page.getRecords(), page.getTotal());
+
+        return ResponseResult.okResult(pageVo);
+    }
+
+    @Override
+    public ResponseResult addUser(AddUserDto addUserDto) {
+        // 用户名不能为空，否则提示：必需填写用户名
+        if (!StringUtils.hasText(addUserDto.getUserName())) {
+            throw new SystemException(AppHttpCodeEnum.USERNAME_NOT_NULL);
+        }
+        // 用户名和昵称必须之前未存在，否则提示：已存在
+        if (userNameExist(addUserDto.getUserName())) {
+            throw new SystemException(AppHttpCodeEnum.USERNAME_EXIST);
+        }
+        if (nickNameExist(addUserDto.getNickName())) {
+            throw new SystemException(AppHttpCodeEnum.NICKNAME_EXIST);
+        }
+        // 手机号必须之前未存在，否则提示：手机号已存在
+        if (phonenumberExist(addUserDto.getPhonenumber())){
+            throw new SystemException(AppHttpCodeEnum.PHONENUMBER_EXIST);
+        }
+        // 邮箱必须之前未存在，否则提示：邮箱已存在
+        if (emailExist(addUserDto.getEmail())){
+            throw new SystemException(AppHttpCodeEnum.EMAIL_EXIST);
+        }
+        // 数据拷贝
+        User user = BeanCopyUtils.copyBean(addUserDto, User.class);
+        // 新增用户时注意密码加密存储。
+        String encodePassword = passwordEncoder.encode(user.getPassword());
+        // 存储数据库
+        user.setPassword(encodePassword);
+        save(user);
+
+        // 存储角色关联信息
+        UserRole userRole = new UserRole();
+        userRole.setUserId(user.getId());
+        for (int i = 0; i < addUserDto.getRoleIds().size(); ++i) {
+            userRole.setRoleId(addUserDto.getRoleIds().get(i));
+            userRoleService.save(userRole);
+        }
+
+        return ResponseResult.okResult();
+    }
+
+    private boolean emailExist(String email) {
+        LambdaQueryWrapper<User> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.eq(User::getEmail, email);
+        return count(lambdaQueryWrapper) > 0;
+    }
+
+    private boolean phonenumberExist(String phonenumber) {
+        LambdaQueryWrapper<User> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.eq(User::getPhonenumber, phonenumber);
         return count(lambdaQueryWrapper) > 0;
     }
 }

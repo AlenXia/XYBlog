@@ -67,5 +67,11 @@ public interface RoleService extends IService<Role> {
      * @return
      */
     ResponseResult deleteRole(Long id);
+
+    /**
+     * 查询的是所有状态正常的角色
+     * @return
+     */
+    ResponseResult<List<Role>> listResponseResult();
 }
 

@@ -4,11 +4,14 @@ import com.sangeng.domain.ResponseResult;
 import com.sangeng.domain.dto.AddRoleDto;
 import com.sangeng.domain.dto.SelectRoleDto;
 import com.sangeng.domain.dto.UpdateRoleDto;
+import com.sangeng.domain.entity.Role;
 import com.sangeng.domain.vo.PageVo;
 import com.sangeng.domain.vo.RoleVo;
 import com.sangeng.service.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * @Author AlenXia
@@ -77,5 +80,10 @@ public class RoleController {
     @DeleteMapping("/{id}")
     public ResponseResult deleteRole(@PathVariable("id") Long id) {
         return roleService.deleteRole(id);
+    }
+
+    @GetMapping("/listAllRole")
+    public ResponseResult<List<Role>> listResponseResult(){
+        return roleService.listResponseResult();
     }
 }

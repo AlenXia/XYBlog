@@ -54,7 +54,8 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
         if (StringUtils.hasText(status)) {
             queryWrapper.like(Role::getStatus, status);
         }
-        //分页查询
+
+        // 分页查询
         Page<Role> page = new Page<>();
         page.setCurrent(pageNum);
         page.setSize(pageSize);
@@ -86,9 +87,7 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
         save(role);
         // 保存角色和权限的关系
         List<RoleMenu> roleMenus = addRoleDto.getMenuIds().stream()
-                .map(menuId -> {
-                    return new RoleMenu(role.getId(), menuId.longValue());
-                })
+                .map(menuId -> new RoleMenu(role.getId(), menuId.longValue()))
                 .collect(Collectors.toList());
         roleMenuService.saveBatch(roleMenus);
         return ResponseResult.okResult();
@@ -148,5 +147,14 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
 
         return ResponseResult.okResult();
     }
+
+    @Override
+    public ResponseResult<List<Role>> listResponseResult() {
+        LambdaQueryWrapper<Role> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Role::getStatus, "0");
+        List<Role> roles = getBaseMapper().selectList(queryWrapper);
+        return ResponseResult.okResult(roles);
+    }
+
 }
 
