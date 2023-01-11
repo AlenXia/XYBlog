@@ -13,8 +13,7 @@ import java.util.List;
 @NoArgsConstructor
 public class RoleMenuTreeSelectVo {
 
-    private List<Long> checkedKeys;
-
     private List<MenuTreeVo> menus;
 
+    private List<Long> checkedKeys;
 }

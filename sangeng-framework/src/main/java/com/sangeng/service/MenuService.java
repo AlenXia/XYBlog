@@ -5,6 +5,7 @@ import com.sangeng.domain.ResponseResult;
 import com.sangeng.domain.entity.Menu;
 import com.sangeng.domain.vo.MenuTreeVo;
 import com.sangeng.domain.vo.MenuVo;
+import com.sangeng.domain.vo.RoleMenuTreeSelectVo;
 
 import java.util.List;
 
@@ -63,5 +64,12 @@ public interface MenuService extends IService<Menu> {
      * @return
      */
     ResponseResult<MenuTreeVo> selectMenuTree();
+
+    /**
+     * 加载对应角色菜单列表
+     * @param id
+     * @return
+     */
+    ResponseResult<RoleMenuTreeSelectVo> roleMenuTreeSelect(Long id);
 }
 

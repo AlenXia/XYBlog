@@ -3,6 +3,7 @@ package com.sangeng.controller;
 import com.sangeng.domain.ResponseResult;
 import com.sangeng.domain.vo.MenuTreeVo;
 import com.sangeng.domain.vo.MenuVo;
+import com.sangeng.domain.vo.RoleMenuTreeSelectVo;
 import com.sangeng.service.MenuService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -73,5 +74,15 @@ public class MenuController {
     @GetMapping("/treeselect")
     public ResponseResult<MenuTreeVo> selectMenuTree() {
         return menuService.selectMenuTree();
+    }
+
+    /**
+     * 加载对应角色菜单列表
+     * @param id
+     * @return
+     */
+    @GetMapping("roleMenuTreeselect/{id}")
+    public ResponseResult<RoleMenuTreeSelectVo> roleMenuTreeSelect(@PathVariable("id") Long id) {
+        return menuService.roleMenuTreeSelect(id);
     }
 }

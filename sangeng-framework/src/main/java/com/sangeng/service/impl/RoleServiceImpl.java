@@ -9,9 +9,7 @@ import com.sangeng.domain.dto.SelectRoleDto;
 import com.sangeng.domain.dto.UpdateRoleDto;
 import com.sangeng.domain.entity.Role;
 import com.sangeng.domain.entity.RoleMenu;
-import com.sangeng.domain.vo.MenuTreeVo;
 import com.sangeng.domain.vo.PageVo;
-import com.sangeng.domain.vo.RoleMenuTreeSelectVo;
 import com.sangeng.domain.vo.RoleVo;
 import com.sangeng.mapper.RoleMapper;
 import com.sangeng.service.RoleMenuService;
@@ -103,24 +101,24 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
         return ResponseResult.okResult(selectRoleDto);
     }
 
-    @Override
-    public ResponseResult<RoleMenuTreeSelectVo> roleMenuTreeSelect(Long id) {
-        //
-        List<MenuTreeVo> menuTreeVos = new ArrayList<>();
-
-        // 使用表达式查找出所有的checkedKeys
-        LambdaQueryWrapper<RoleMenu> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(RoleMenu::getRoleId, id);
-        List<RoleMenu> roleMenuList = roleMenuService.getBaseMapper().selectList(queryWrapper);
-        List<Long> checkedKeys = new ArrayList<>();
-        for (int i = 0; i < roleMenuList.size(); i++) {
-            checkedKeys.add(roleMenuList.get(i).getRoleId());
-        }
-
-        // 有参构造
-        RoleMenuTreeSelectVo roleMenuTreeSelectVo = new RoleMenuTreeSelectVo(checkedKeys, menuTreeVos);
-        return ResponseResult.okResult(roleMenuTreeSelectVo);
-    }
+    // @Override
+    // public ResponseResult<RoleMenuTreeSelectVo> roleMenuTreeSelect(Long id) {
+    //     //
+    //     List<MenuTreeVo> menuTreeVos = new ArrayList<>();
+    //
+    //     // 使用表达式查找出所有的checkedKeys
+    //     LambdaQueryWrapper<RoleMenu> queryWrapper = new LambdaQueryWrapper<>();
+    //     queryWrapper.eq(RoleMenu::getRoleId, id);
+    //     List<RoleMenu> roleMenuList = roleMenuService.getBaseMapper().selectList(queryWrapper);
+    //     List<Long> checkedKeys = new ArrayList<>();
+    //     for (int i = 0; i < roleMenuList.size(); i++) {
+    //         checkedKeys.add(roleMenuList.get(i).getRoleId());
+    //     }
+    //
+    //     // 有参构造
+    //     RoleMenuTreeSelectVo roleMenuTreeSelectVo = new RoleMenuTreeSelectVo(checkedKeys, menuTreeVos);
+    //     return ResponseResult.okResult(roleMenuTreeSelectVo);
+    // }
 
     @Override
     public ResponseResult updateRole(UpdateRoleDto updateRoleDto) {

@@ -5,12 +5,16 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.sangeng.constants.SystemConstants;
 import com.sangeng.domain.ResponseResult;
 import com.sangeng.domain.entity.Menu;
+import com.sangeng.domain.entity.RoleMenu;
 import com.sangeng.domain.vo.MenuTreeVo;
 import com.sangeng.domain.vo.MenuVo;
+import com.sangeng.domain.vo.RoleMenuTreeSelectVo;
 import com.sangeng.mapper.MenuMapper;
 import com.sangeng.service.MenuService;
+import com.sangeng.service.RoleMenuService;
 import com.sangeng.utils.BeanCopyUtils;
 import com.sangeng.utils.SecurityUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -25,6 +29,9 @@ import java.util.stream.Collectors;
  */
 @Service("menuService")
 public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements MenuService {
+    @Autowired
+    private RoleMenuService roleMenuService;
+
     @Override
     public List<String> selectPermsByUserId(Long id) {
         // 如果是管理员，则返回所有权限
@@ -146,7 +153,7 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
     public ResponseResult<MenuTreeVo> selectMenuTree() {
         // 查询所有Menu
         List<Menu> menus = getBaseMapper().selectList(null);
-        List<MenuTreeVo> menuTreeVos=new ArrayList<>();
+        List<MenuTreeVo> menuTreeVos = new ArrayList<>();
         for (int i = 0; i < menus.size(); ++i) {
             MenuTreeVo menuTree = new MenuTreeVo();
             menuTree.setId(menus.get(i).getId());
@@ -169,6 +176,40 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
                 .map(m -> m.setChildren(getMenuVoChildren(m, menuTreeVos)))
                 .collect(Collectors.toList());
         return childrenList;
+    }
+
+    @Override
+    public ResponseResult<RoleMenuTreeSelectVo> roleMenuTreeSelect(Long id) {
+
+        // 查询所有Menu
+        List<Menu> menus = getBaseMapper().selectList(null);
+        List<MenuTreeVo> menuTreeVos = new ArrayList<>();
+        for (int i = 0; i < menus.size(); ++i) {
+            MenuTreeVo menuTree = new MenuTreeVo();
+            menuTree.setId(menus.get(i).getId());
+            menuTree.setLabel(menus.get(i).getMenuName());
+            menuTree.setParentId(menus.get(i).getParentId());
+            menuTreeVos.add(menuTree);
+        }
+        // 构建tree
+        // 先找出第一层的菜单,然后去找他们的子菜单设置到children属性中
+        List<MenuTreeVo> menuTreeVO = menuTreeVos.stream()
+                .filter(menu -> menu.getParentId().equals(0L))
+                .map(menu -> menu.setChildren(getMenuVoChildren(menu, menuTreeVos)))
+                .collect(Collectors.toList());
+
+        List<Long> checkedList = new ArrayList<>();
+
+        // 获取checkedList
+        LambdaQueryWrapper<RoleMenu> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(RoleMenu::getRoleId, id);
+        List<RoleMenu> roleMenus = roleMenuService.getBaseMapper().selectList(queryWrapper);
+        for (int i = 0; i < roleMenus.size(); ++i) {
+            checkedList.add(roleMenus.get(i).getMenuId());
+        }
+
+        RoleMenuTreeSelectVo roleMenuTreeSelectVo = new RoleMenuTreeSelectVo(menuTreeVO, checkedList);
+        return ResponseResult.okResult(roleMenuTreeSelectVo);
     }
 }
 
