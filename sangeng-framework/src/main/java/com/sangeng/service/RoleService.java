@@ -54,18 +54,18 @@ public interface RoleService extends IService<Role> {
      */
     ResponseResult<SelectRoleDto> selectById(Integer id);
 
-    // /**
-    //  * 加载对应角色菜单列表树
-    //  * @param id
-    //  * @return
-    //  */
-    // ResponseResult<RoleMenuTreeSelectVo> roleMenuTreeSelect(Long id);
-
     /**
      * 更新角色信息
      * @param updateRoleDto
      * @return
      */
     ResponseResult updateRole(UpdateRoleDto updateRoleDto);
+
+    /**
+     * 删除角色
+     * @param id
+     * @return
+     */
+    ResponseResult deleteRole(Long id);
 }
 

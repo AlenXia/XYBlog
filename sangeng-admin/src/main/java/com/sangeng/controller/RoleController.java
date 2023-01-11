@@ -64,8 +64,18 @@ public class RoleController {
         return roleService.selectById(id);
     }
 
+    /**
+     * 更新角色信息
+     * @param updateRoleDto
+     * @return
+     */
     @PutMapping
     public ResponseResult updateRole(@RequestBody UpdateRoleDto updateRoleDto) {
         return roleService.updateRole(updateRoleDto);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseResult deleteRole(@PathVariable("id") Long id) {
+        return roleService.deleteRole(id);
     }
 }

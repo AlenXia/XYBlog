@@ -85,4 +85,5 @@ public class MenuController {
     public ResponseResult<RoleMenuTreeSelectVo> roleMenuTreeSelect(@PathVariable("id") Long id) {
         return menuService.roleMenuTreeSelect(id);
     }
+
 }

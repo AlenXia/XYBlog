@@ -101,25 +101,6 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
         return ResponseResult.okResult(selectRoleDto);
     }
 
-    // @Override
-    // public ResponseResult<RoleMenuTreeSelectVo> roleMenuTreeSelect(Long id) {
-    //     //
-    //     List<MenuTreeVo> menuTreeVos = new ArrayList<>();
-    //
-    //     // 使用表达式查找出所有的checkedKeys
-    //     LambdaQueryWrapper<RoleMenu> queryWrapper = new LambdaQueryWrapper<>();
-    //     queryWrapper.eq(RoleMenu::getRoleId, id);
-    //     List<RoleMenu> roleMenuList = roleMenuService.getBaseMapper().selectList(queryWrapper);
-    //     List<Long> checkedKeys = new ArrayList<>();
-    //     for (int i = 0; i < roleMenuList.size(); i++) {
-    //         checkedKeys.add(roleMenuList.get(i).getRoleId());
-    //     }
-    //
-    //     // 有参构造
-    //     RoleMenuTreeSelectVo roleMenuTreeSelectVo = new RoleMenuTreeSelectVo(checkedKeys, menuTreeVos);
-    //     return ResponseResult.okResult(roleMenuTreeSelectVo);
-    // }
-
     @Override
     public ResponseResult updateRole(UpdateRoleDto updateRoleDto) {
 
@@ -145,6 +126,26 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
         // 更新角色信息
         Role role = BeanCopyUtils.copyBean(updateRoleDto, Role.class);
         getBaseMapper().updateById(role);
+        return ResponseResult.okResult();
+    }
+
+    @Override
+    public ResponseResult deleteRole(Long id) {
+        // 查找角色是否存在
+        Role role = getBaseMapper().selectById(id);
+        if (role == null) {
+            throw new RuntimeException("角色不存在");
+        }
+
+        // 下面代码应该是不需要删的，因为Role并不是物理删除
+        // 删除role_menu表中的关系
+        // LambdaQueryWrapper<RoleMenu> queryWrapper=new LambdaQueryWrapper<>();
+        // queryWrapper.eq(RoleMenu::getRoleId, id);
+        // roleMenuService.getBaseMapper().delete(queryWrapper);
+
+        // 删除角色
+        getBaseMapper().deleteById(id);
+
         return ResponseResult.okResult();
     }
 }
