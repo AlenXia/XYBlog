@@ -3,18 +3,17 @@ package com.sangeng.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.sangeng.domain.ResponseResult;
 import com.sangeng.domain.dto.AddUserDto;
+import com.sangeng.domain.dto.SelectUserDto;
 import com.sangeng.domain.entity.User;
 import com.sangeng.domain.vo.PageVo;
 
 
 /**
  * 用户表(User)表服务接口
- *
  * @author makejava
  * @since 2022-02-09 00:28:29
  */
 public interface UserService extends IService<User> {
-
     /**
      * 展示用户信息
      * @return
@@ -52,5 +51,19 @@ public interface UserService extends IService<User> {
      * @return
      */
     ResponseResult addUser(AddUserDto addUserDto);
+
+    /**
+     * 根据id逻辑删除用户
+     * @param id
+     * @return
+     */
+    ResponseResult deleteUser(Long id);
+
+    /**
+     * 回显用户信息
+     * @param id
+     * @return
+     */
+    ResponseResult<SelectUserDto> findUser(Long id);
 }
 

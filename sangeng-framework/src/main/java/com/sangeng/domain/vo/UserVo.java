@@ -62,4 +62,5 @@ public class UserVo {
      */
     private Date updateTime;
 
+
 }

@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.sangeng.domain.ResponseResult;
 import com.sangeng.domain.dto.AddUserDto;
+import com.sangeng.domain.dto.SelectUserDto;
+import com.sangeng.domain.entity.Role;
 import com.sangeng.domain.entity.User;
 import com.sangeng.domain.entity.UserRole;
 import com.sangeng.domain.vo.PageVo;
@@ -12,6 +14,7 @@ import com.sangeng.domain.vo.UserInfoVo;
 import com.sangeng.enums.AppHttpCodeEnum;
 import com.sangeng.exception.SystemException;
 import com.sangeng.mapper.UserMapper;
+import com.sangeng.service.RoleService;
 import com.sangeng.service.UserRoleService;
 import com.sangeng.service.UserService;
 import com.sangeng.utils.BeanCopyUtils;
@@ -20,6 +23,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 用户表(User)表服务实现类
@@ -30,6 +36,8 @@ import org.springframework.util.StringUtils;
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
     @Autowired
     private UserRoleService userRoleService;
+    @Autowired
+    private RoleService roleService;
 
     @Override
     public ResponseResult userInfo() {
@@ -140,13 +148,16 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         if (emailExist(addUserDto.getEmail())){
             throw new SystemException(AppHttpCodeEnum.EMAIL_EXIST);
         }
+
         // 数据拷贝
         User user = BeanCopyUtils.copyBean(addUserDto, User.class);
         // 新增用户时注意密码加密存储。
         String encodePassword = passwordEncoder.encode(user.getPassword());
         // 存储数据库
         user.setPassword(encodePassword);
-        save(user);
+        getBaseMapper().insert(user);
+
+        System.err.println(user);
 
         // 存储角色关联信息
         UserRole userRole = new UserRole();
@@ -169,6 +180,38 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         LambdaQueryWrapper<User> lambdaQueryWrapper = new LambdaQueryWrapper<>();
         lambdaQueryWrapper.eq(User::getPhonenumber, phonenumber);
         return count(lambdaQueryWrapper) > 0;
+    }
+
+    @Override
+    public ResponseResult deleteUser(Long id) {
+        User user = getBaseMapper().selectById(id);
+        if (user == null) {
+            throw new SystemException(AppHttpCodeEnum.USER_NOT_EXIST);
+        }
+        getBaseMapper().deleteById(id);
+        return ResponseResult.okResult();
+    }
+
+    @Override
+    public ResponseResult<SelectUserDto> findUser(Long id) {
+        // 查找角色id
+        LambdaQueryWrapper<UserRole> userRoleLambdaQueryWrapper = new LambdaQueryWrapper();
+        userRoleLambdaQueryWrapper.eq(UserRole::getUserId, id);
+        List<UserRole> userRoleList = userRoleService.getBaseMapper().selectList(userRoleLambdaQueryWrapper);
+        List<Long> roleIds = new ArrayList<>();
+        for (int i = 0; i < userRoleList.size(); ++i) {
+            roleIds.add(userRoleList.get(i).getRoleId());
+        }
+        // 查询所有角色的列表
+        LambdaQueryWrapper<Role> roleLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        roleLambdaQueryWrapper.eq(Role::getStatus, "0");
+        List<Role> roleList = roleService.getBaseMapper().selectList(roleLambdaQueryWrapper);
+
+        // 查找用户信息
+        User user = getById(id);
+        // 创建回显类
+        SelectUserDto selectUserDto = new SelectUserDto(roleIds, roleList, user);
+        return ResponseResult.okResult(selectUserDto);
     }
 }
 
