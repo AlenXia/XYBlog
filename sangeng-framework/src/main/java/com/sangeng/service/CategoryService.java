@@ -2,6 +2,7 @@ package com.sangeng.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.sangeng.domain.ResponseResult;
+import com.sangeng.domain.dto.AddCategoryDto;
 import com.sangeng.domain.entity.Category;
 import com.sangeng.domain.vo.CategoryVo;
 import com.sangeng.domain.vo.PageVo;
@@ -34,5 +35,12 @@ public interface CategoryService extends IService<Category> {
      * @return
      */
     ResponseResult<PageVo> listCategory(Integer pageNum, Integer pageSize, String name, String status);
+
+    /**
+     * 添加菜单
+     * @param addCategoryDto
+     * @return
+     */
+    ResponseResult addCategory(AddCategoryDto addCategoryDto);
 }
 

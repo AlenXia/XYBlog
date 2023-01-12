@@ -5,10 +5,13 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.sangeng.constants.SystemConstants;
 import com.sangeng.domain.ResponseResult;
+import com.sangeng.domain.dto.AddCategoryDto;
 import com.sangeng.domain.entity.Article;
 import com.sangeng.domain.entity.Category;
 import com.sangeng.domain.vo.CategoryVo;
 import com.sangeng.domain.vo.PageVo;
+import com.sangeng.enums.AppHttpCodeEnum;
+import com.sangeng.exception.SystemException;
 import com.sangeng.mapper.CategoryMapper;
 import com.sangeng.service.ArticleService;
 import com.sangeng.service.CategoryService;
@@ -84,6 +87,20 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
         PageVo pageVo = new PageVo(page.getRecords(), page.getTotal());
 
         return ResponseResult.okResult(pageVo);
+    }
+
+    @Override
+    public ResponseResult addCategory(AddCategoryDto addCategoryDto) {
+        // 判断菜单是否已经存在
+        LambdaQueryWrapper<Category> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Category::getName, addCategoryDto.getName());
+        if (getBaseMapper().selectOne(queryWrapper) != null) {
+            throw new SystemException(AppHttpCodeEnum.CATEGORY_EXIST);
+        }
+
+        Category category = BeanCopyUtils.copyBean(addCategoryDto, Category.class);
+        save(category);
+        return ResponseResult.okResult();
     }
 }
 
