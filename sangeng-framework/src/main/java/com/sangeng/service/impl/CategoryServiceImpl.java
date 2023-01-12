@@ -129,5 +129,15 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
 
         return ResponseResult.okResult();
     }
+
+    @Override
+    public ResponseResult deleteCategory(Long id) {
+        Category category = getBaseMapper().selectById(id);
+        if (category == null) {
+            throw new SystemException(AppHttpCodeEnum.CATEGORY_NOT_EXIST);
+        }
+        getBaseMapper().deleteById(id);
+        return ResponseResult.okResult();
+    }
 }
 

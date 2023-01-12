@@ -90,4 +90,9 @@ public class CategoryController {
     public ResponseResult updateCategory(@RequestBody SelectCategoryDto selectCategoryDto) {
         return categoryService.updateCategory(selectCategoryDto);
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseResult deleteCategory(@PathVariable("id") Long id){
+        return categoryService.deleteCategory(id);
+    }
 }
