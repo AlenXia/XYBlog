@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.sangeng.constants.SystemConstants;
 import com.sangeng.domain.ResponseResult;
 import com.sangeng.domain.dto.AddCategoryDto;
+import com.sangeng.domain.dto.SelectCategoryDto;
 import com.sangeng.domain.entity.Article;
 import com.sangeng.domain.entity.Category;
 import com.sangeng.domain.vo.CategoryVo;
@@ -91,15 +92,41 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
 
     @Override
     public ResponseResult addCategory(AddCategoryDto addCategoryDto) {
-        // 判断菜单是否已经存在
+        // 判断分类是否已经存在
         LambdaQueryWrapper<Category> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(Category::getName, addCategoryDto.getName());
         if (getBaseMapper().selectOne(queryWrapper) != null) {
             throw new SystemException(AppHttpCodeEnum.CATEGORY_EXIST);
         }
 
+        // 拷贝并存储
         Category category = BeanCopyUtils.copyBean(addCategoryDto, Category.class);
         save(category);
+        return ResponseResult.okResult();
+    }
+
+    @Override
+    public ResponseResult<SelectCategoryDto> selectCategory(Long id) {
+        Category category = getBaseMapper().selectById(id);
+        if (category == null) {
+            throw new SystemException(AppHttpCodeEnum.CATEGORY_NOT_EXIST);
+        }
+        return ResponseResult.okResult(category);
+    }
+
+    @Override
+    public ResponseResult updateCategory(SelectCategoryDto selectCategoryDto) {
+        // 判断分类是否已经存在
+        LambdaQueryWrapper<Category> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Category::getName, selectCategoryDto.getName());
+        if (getBaseMapper().selectOne(queryWrapper) != null) {
+            throw new SystemException(AppHttpCodeEnum.CATEGORY_EXIST);
+        }
+        // 拷贝并更新
+        Category category = BeanCopyUtils.copyBean(selectCategoryDto, Category.class);
+        System.err.println(category);
+        getBaseMapper().updateById(category);
+
         return ResponseResult.okResult();
     }
 }

@@ -4,6 +4,7 @@ import com.alibaba.excel.EasyExcel;
 import com.alibaba.fastjson.JSON;
 import com.sangeng.domain.ResponseResult;
 import com.sangeng.domain.dto.AddCategoryDto;
+import com.sangeng.domain.dto.SelectCategoryDto;
 import com.sangeng.domain.entity.Category;
 import com.sangeng.domain.vo.CategoryVo;
 import com.sangeng.domain.vo.ExcelCategoryVo;
@@ -58,7 +59,7 @@ public class CategoryController {
     }
 
     /**
-     * 分页展示菜单信息
+     * 分页展示分类信息
      * @param pageNum
      * @param pageSize
      * @param name
@@ -70,8 +71,23 @@ public class CategoryController {
         return categoryService.listCategory(pageNum, pageSize, name, status);
     }
 
+    /**
+     * 添加分类
+     * @param addCategoryDto
+     * @return
+     */
     @PostMapping
     public ResponseResult addCategory(@RequestBody AddCategoryDto addCategoryDto) {
         return categoryService.addCategory(addCategoryDto);
+    }
+
+    @GetMapping("{id}")
+    public ResponseResult<SelectCategoryDto> selectCategoryById(@PathVariable("id") Long id) {
+        return categoryService.selectCategory(id);
+    }
+
+    @PutMapping
+    public ResponseResult updateCategory(@RequestBody SelectCategoryDto selectCategoryDto) {
+        return categoryService.updateCategory(selectCategoryDto);
     }
 }
