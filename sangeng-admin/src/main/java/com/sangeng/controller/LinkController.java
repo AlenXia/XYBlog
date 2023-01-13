@@ -37,4 +37,9 @@ public class LinkController {
     public ResponseResult updateLink(@RequestBody Link link){
         return linkService.updateLink(link);
     }
+
+    @PostMapping
+    public ResponseResult addLink(@RequestBody Link link){
+        return linkService.addLink(link);
+    }
 }

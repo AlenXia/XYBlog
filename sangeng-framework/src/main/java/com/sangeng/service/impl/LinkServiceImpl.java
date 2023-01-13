@@ -20,7 +20,6 @@ import java.util.List;
 
 /**
  * 友链(Link)表服务实现类
- *
  * @author makejava
  * @since 2022-10-26 20:06:33
  */
@@ -67,11 +66,26 @@ public class LinkServiceImpl extends ServiceImpl<LinkMapper, Link> implements Li
     @Override
     public ResponseResult updateLink(Link link) {
         Link result = getBaseMapper().selectById(link.getId());
-        if (result==null){
+        if (result == null) {
             throw new SystemException(AppHttpCodeEnum.LINK_NOT_EXIST);
         }
 
         getBaseMapper().updateById(link);
+
+        return ResponseResult.okResult();
+    }
+
+    @Override
+    public ResponseResult addLink(Link link) {
+        // 判断名称是否重合
+        LambdaQueryWrapper<Link> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Link::getName, link.getName());
+        Link selectByName = getBaseMapper().selectOne(queryWrapper);
+
+        if (selectByName != null) {
+            throw new SystemException(AppHttpCodeEnum.LINK_NAME_EXIST);
+        }
+        save(link);
 
         return ResponseResult.okResult();
     }

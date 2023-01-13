@@ -27,7 +27,7 @@ public enum AppHttpCodeEnum {
     CATEGORY_EXIST(516, "分类名已存在"),
     CATEGORY_NOT_EXIST(517, "分类不存在"),
     LINK_NOT_EXIST(518, "友链不存在"),
-    ;
+    LINK_NAME_EXIST(519,"友链名称存在" );
     int code;
     String msg;
 
