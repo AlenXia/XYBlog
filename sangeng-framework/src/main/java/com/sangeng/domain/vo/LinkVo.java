@@ -10,7 +10,6 @@ import lombok.NoArgsConstructor;
 public class LinkVo {
     private Long id;
 
-
     private String name;
 
     private String logo;

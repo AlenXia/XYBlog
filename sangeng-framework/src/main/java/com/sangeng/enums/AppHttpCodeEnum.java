@@ -23,9 +23,11 @@ public enum AppHttpCodeEnum {
     TAG_REMARK_NOT_NULL(513, "标签备注不能为空"),
     TAG_NAME_EXIST(514, "标签名已存在"),
     TAG_NOT_EXIST(514, "标签不存在或已经被删除"),
-    USER_NOT_EXIST(515,"用户不存在" ),
+    USER_NOT_EXIST(515, "用户不存在"),
     CATEGORY_EXIST(516, "分类名已存在"),
-    CATEGORY_NOT_EXIST(517, "分类不存在"),;
+    CATEGORY_NOT_EXIST(517, "分类不存在"),
+    LINK_NOT_EXIST(518, "友链不存在"),
+    ;
     int code;
     String msg;
 
