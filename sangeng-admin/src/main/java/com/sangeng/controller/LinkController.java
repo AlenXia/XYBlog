@@ -42,4 +42,9 @@ public class LinkController {
     public ResponseResult addLink(@RequestBody Link link){
         return linkService.addLink(link);
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseResult deleteLink(@PathVariable("id") Long id) {
+        return linkService.deleteLink(id);
+    }
 }

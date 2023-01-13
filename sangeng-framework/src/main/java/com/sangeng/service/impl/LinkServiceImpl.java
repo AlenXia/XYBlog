@@ -89,5 +89,18 @@ public class LinkServiceImpl extends ServiceImpl<LinkMapper, Link> implements Li
 
         return ResponseResult.okResult();
     }
+
+    @Override
+    public ResponseResult deleteLink(Long id) {
+        // 判断友链是否存在
+        Link selectById = getBaseMapper().selectById(id);
+        if (selectById == null) {
+            throw new SystemException(AppHttpCodeEnum.LINK_NOT_EXIST);
+        }
+
+        getBaseMapper().deleteById(id);
+
+        return ResponseResult.okResult();
+    }
 }
 

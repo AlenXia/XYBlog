@@ -46,5 +46,12 @@ public interface LinkService extends IService<Link> {
      * @return
      */
     ResponseResult addLink(Link link);
+
+    /**
+     * 删除友链
+     * @param id
+     * @return
+     */
+    ResponseResult deleteLink(Long id);
 }
 
